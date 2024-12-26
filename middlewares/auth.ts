@@ -18,17 +18,7 @@ export const isAuthenticated = CatchAsyncError(
     }
 
     try {
-      // Extract the secret based on the route
-      const secretKey = getSecretKey(req.url, req.body.role || "");
-
-      if (!secretKey) {
-        return next(
-          res.status(401).json({
-            success: false,
-            message: "Invalid route",
-          })
-        );
-      }
+      const secretKey = process.env.ACCESS_TOKEN || "";
 
       const decoded = jwt.verify(access_token, secretKey) as JwtPayload;
 
@@ -63,13 +53,3 @@ export const isAuthenticated = CatchAsyncError(
     }
   }
 );
-
-// Function to get the secret key based on the route
-const getSecretKey = (url: string, role: string): string | null => {
-  if (role === "admin") {
-    return process.env.ADMIN_SECRET || null;
-  } else if (role === "user") {
-    return process.env.USER_SECRET || null;
-  }
-  return null;
-};
