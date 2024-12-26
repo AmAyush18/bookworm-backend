@@ -4,6 +4,7 @@ import dotenv from "dotenv";
 import cors from "cors";
 import cookieParser from "cookie-parser";
 import { JwtPayload } from "jsonwebtoken";
+import authRouter from "./routes/auth.routes";
 
 
 dotenv.config();
@@ -30,6 +31,10 @@ app.use(
     credentials: true,
     })
 );
+
+// routes
+app.use("/api/v1", authRouter);
+
 
 // test api
 app.get("/api/v1/test", async (req: Request, res: Response, next: NextFunction) => {
