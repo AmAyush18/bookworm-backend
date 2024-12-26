@@ -1,0 +1,59 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("POSTGRES_PRISMA_URL")
+  directUrl = env("POSTGRES_URL_NON_POOLING")
+}
+
+enum UserRole {
+  ADMIN
+  USER
+}
+
+model Book {
+  id            Int           @id @default(autoincrement())
+  title         String
+  author        String
+  genre         String
+  publishedYear Int
+  isbn          String?       @unique
+  isAvailable   Boolean       @default(true)
+  borrowedCount Int           @default(0)
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+  Transactions  Transactions[]
+
+  @@index([title, author], name: "idx_book_search")
+}
+
+model User {
+  id            Int           @id @default(autoincrement())
+  fullName      String
+  email         String        @unique
+  password      String
+  username      String?       @unique
+  phoneNumber   String?
+  accessToken   String?
+  refreshToken  String?
+  role          UserRole      @default(USER)
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+  Transactions  Transactions[]
+}
+
+model Transactions {
+  id         Int       @id @default(autoincrement())
+  userId     Int
+  bookId     Int
+  borrowedAt DateTime  @default(now())
+  returnedAt DateTime? 
+  User       User      @relation(fields: [userId], references: [id])
+  Book       Book      @relation(fields: [bookId], references: [id])
+
+  @@index([userId], name: "idx_transactions_user")
+  @@index([bookId], name: "idx_transactions_book")
+  @@index([borrowedAt], name: "idx_transactions_borrowed_at")
+}
