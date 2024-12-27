@@ -1,6 +1,6 @@
 import { UserRole } from "./userRole";
 import { Transaction } from "./transactionType";
-import { User, IActivationToken, IRegistrationBody, IActivationRequest, ILoginRequest } from "./userType";
+import { User, IActivationToken, IRegistrationBody, IActivationRequest, ILoginRequest, IUpdateUserInfo } from "./userType";
 import { Book } from "./bookType";
 
 export {
@@ -11,5 +11,6 @@ export {
     IRegistrationBody,
     IActivationRequest,
     ILoginRequest,
+    IUpdateUserInfo,
     Book
 }
