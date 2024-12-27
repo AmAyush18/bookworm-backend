@@ -1,7 +1,7 @@
 import express from 'express'
-import { activateUser, registerUser } from '../controllers/auth.controller'
+import { activateUser, loginUser, registerUser } from '../controllers/auth.controller'
 
-import { activationValidation, registrationValidation } from '../validations/authValidations'
+import { activationValidation, loginValidation, registrationValidation } from '../validations/authValidations'
 
 import { handleValidationErrors } from '../middlewares/validation'
 
@@ -21,5 +21,12 @@ authRouter.post(
     handleValidationErrors,
     activateUser
   );
+
+authRouter.post(
+    "/auth/login",
+    loginValidation,
+    handleValidationErrors,
+    loginUser
+);
 
 export default authRouter
