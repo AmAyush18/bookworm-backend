@@ -30,3 +30,12 @@ export const createUser = async (
       },
     });
   };
+
+  export const checkUserExistence = async (email: string) => {
+    return await prisma.user.findFirst({
+      where: {
+        email,
+      },
+    });
+  };
+  

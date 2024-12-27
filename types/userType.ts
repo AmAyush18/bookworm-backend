@@ -30,4 +30,9 @@ export interface IRegistrationBody {
     password: string;
     fullName: string;
     username: string;
-  }
+}
+
+export interface ILoginRequest {
+    email: string;
+    password: string;
+}

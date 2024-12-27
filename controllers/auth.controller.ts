@@ -2,8 +2,8 @@ require("dotenv").config();
 import { Request, Response, NextFunction } from "express";
 import { CatchAsyncError } from "../middlewares/catchAsyncError";
 import bcrypt, { compare } from "bcryptjs";
-import { checkEmailExistence, createUser } from "../db/authDBFunctions";
-import { IRegistrationBody, IActivationToken, IActivationRequest } from "../types";
+import { checkEmailExistence, checkUserExistence, createUser } from "../db/authDBFunctions";
+import { IRegistrationBody, IActivationToken, IActivationRequest, ILoginRequest } from "../types";
 import jwt from "jsonwebtoken";
 import { createActivationToken, sendToken } from "../utils/jwt";
 import ErrorHandler, { handleErrors } from "../middlewares/errorHandler";
@@ -81,6 +81,40 @@ export const registerUser = CatchAsyncError(
         const user = await createUser(updatedUser, activation_token);
       
         sendToken(user, 201, res);
+      } catch (error) {
+        handleErrors(error as Error, req, res, next);
+      }
+    }
+  );
+
+  export const loginUser = CatchAsyncError(
+    async (req: Request, res: Response, next: NextFunction) => {
+      try {
+        const { email, password } = req.body as ILoginRequest;
+  
+        let existingUser = await checkUserExistence(email);
+        let sendWelcomeMessageFlag = false;
+  
+        if (!existingUser) {
+          return res.status(404).json({
+            success: false,
+            message: "User not found, please check your email",
+          });
+        }
+  
+        const passwordMatch = await compare(
+          password,
+          existingUser.password || ""
+        );
+  
+        if (!passwordMatch) {
+          return res.status(400).json({
+            success: false,
+            message: "Username or password is invalid!",
+          });
+        }
+  
+        sendToken(existingUser, 200, res);
       } catch (error) {
         handleErrors(error as Error, req, res, next);
       }

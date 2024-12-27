@@ -24,4 +24,9 @@ export const activationValidation = [
     body("activation_code")
       .isNumeric()
       .withMessage("Activation code should be numeric"),
-  ];
+];
+
+export const loginValidation = [
+    body("email").isEmail().withMessage("Invalid email format"),
+];
+  
