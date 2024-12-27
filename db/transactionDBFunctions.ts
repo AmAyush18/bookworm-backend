@@ -28,6 +28,15 @@ export const updateBorrowedCount = async (bookId: number) => {
   });
 };
 
+export const updateBookAvailability = async (bookId: number) => {
+    return await prisma.book.update({
+        where: { id: bookId },
+        data: {
+          isAvailable: true,
+        },
+      })
+}
+
 // Function to update transaction after returning a book
 export const returnBook = async (transactionId: number) => {
   return await prisma.transactions.update({
@@ -37,6 +46,7 @@ export const returnBook = async (transactionId: number) => {
     },
   });
 };
+
 
 // Function to find a transaction by bookId and userId
 export const findBorrowedBook = async (userId: number, bookId: number) => {

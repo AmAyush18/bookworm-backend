@@ -1,11 +1,8 @@
 import express from 'express'
-import { updateUserInfo } from '../controllers/user.controller'
-
 import { handleValidationErrors } from '../middlewares/validation'
 import { isAuthenticated } from '../middlewares/auth';
-import { updateUserInfoValidation } from '../validations/userValidations';
-import { borrowBookValidation } from '../validations/transactionValidations';
-import { borrowBookTransaction } from '../controllers/transaction.controller';
+import { borrowBookValidation, returnBookValidation } from '../validations/transactionValidations';
+import { borrowBookTransaction, returnBookTransaction } from '../controllers/transaction.controller';
 
 const transactionRouter = express.Router();
 
@@ -15,6 +12,14 @@ transactionRouter.post(
     borrowBookValidation,
     handleValidationErrors,
     borrowBookTransaction
+  );
+
+  transactionRouter.post(
+    "/transaction/return-book",
+    isAuthenticated,
+    returnBookValidation,
+    handleValidationErrors,
+    returnBookTransaction
   );
 
 export default transactionRouter
