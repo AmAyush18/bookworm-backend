@@ -63,6 +63,18 @@ export const updateBook = async (bookId: number, updatedBookData: any) => {
 };
 
 /**
+ * Delete an existing book record in the database.
+ * @param bookId - The ID of the book to be deleted.
+ */
+export const deleteBook = async (bookId: number) => {
+  await prisma.book.delete({
+    where: {
+      id: bookId,
+    },
+  });
+};
+
+/**
  * Retrieve a book record by its ID.
  * @param bookId - The ID of the book.
  * @returns The book record if found, otherwise null.

@@ -3,6 +3,7 @@ import { CatchAsyncError } from "../middlewares/catchAsyncError";
 import { 
   checkISBNExistence, 
   createBook, 
+  deleteBook, 
   getBookById, 
   updateBook
 } from "../db/bookDBFunctions";
@@ -67,4 +68,29 @@ export const updateBookDetails = CatchAsyncError(
         handleErrors(error as Error, req, res, next);
       }
     }
-  );
+);
+
+export const deleteBookById = CatchAsyncError(
+    async (req: Request, res: Response, next: NextFunction) => {
+      try {
+        const { id } = req.params;
+  
+        const existingBook = await getBookById(Number(id));
+        if (!existingBook) {
+          return res.status(404).json({
+            success: false,
+            message: "Book not found",
+          });
+        }
+  
+        await deleteBook(Number(id));
+  
+        res.status(200).json({
+          success: true,
+          message: "Book deleted successfully",
+        });
+      } catch (error) {
+        handleErrors(error as Error, req, res, next);
+      }
+    }
+);
