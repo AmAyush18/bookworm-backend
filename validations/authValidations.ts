@@ -14,5 +14,14 @@ export const registrationValidation = [
     .matches(/[!@#$%^&*(),.?":{}|<>]/)
     .withMessage("Password should contain at least one special character"),
   body("fullName").notEmpty().withMessage("Full name is required"),
-  body("username").notEmpty().withMessage("Company name is required"),
+  body("username").notEmpty().withMessage("Username is required"),
 ];
+
+export const activationValidation = [
+    body("activation_token")
+      .notEmpty()
+      .withMessage("Activation token is required"),
+    body("activation_code")
+      .isNumeric()
+      .withMessage("Activation code should be numeric"),
+  ];

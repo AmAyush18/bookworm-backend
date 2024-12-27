@@ -2,10 +2,11 @@ require("dotenv").config();
 import { Request, Response, NextFunction } from "express";
 import { CatchAsyncError } from "../middlewares/catchAsyncError";
 import bcrypt, { compare } from "bcryptjs";
-import { checkEmailExistence } from "../db/authDBFunctions";
-import { IRegistrationBody } from "../types";
-import { createActivationToken } from "../utils/jwt";
-import { handleErrors } from "../middlewares/errorHandler";
+import { checkEmailExistence, createUser } from "../db/authDBFunctions";
+import { IRegistrationBody, IActivationToken, IActivationRequest } from "../types";
+import jwt from "jsonwebtoken";
+import { createActivationToken, sendToken } from "../utils/jwt";
+import ErrorHandler, { handleErrors } from "../middlewares/errorHandler";
 import sendMail from "../utils/sendMail";
 
 export const registerUser = CatchAsyncError(
@@ -39,6 +40,47 @@ export const registerUser = CatchAsyncError(
           message: `Please check your email: ${email} to activate your account!`,
           activationToken: activationToken.token,
         });
+      } catch (error) {
+        handleErrors(error as Error, req, res, next);
+      }
+    }
+  );
+
+  export const activateUser = CatchAsyncError(
+    async (req: Request, res: Response, next: NextFunction) => {
+      try {
+        const {
+          activation_token,
+          activation_code,
+        } = req.body as IActivationRequest;
+  
+        const newUser = jwt.verify(
+          activation_token,
+          process.env.ACTIVATION_SECRET as string
+        ) as { user: IRegistrationBody; activationCode: string };
+  
+        if (newUser.activationCode !== activation_code) {
+          return res
+            .status(401)
+            .json({ success: false, error: "Invalid OTP, Please try again!" });
+        }
+  
+        const { email, username, fullName, password } = newUser.user;
+  
+        if (await checkEmailExistence(email)) {
+          return next(new ErrorHandler("Email already exist", 400));
+        }
+  
+        let updatedUser = {
+          email,
+          username,
+          fullName,
+          password,
+        };
+  
+        const user = await createUser(updatedUser, activation_token);
+      
+        sendToken(user, 201, res);
       } catch (error) {
         handleErrors(error as Error, req, res, next);
       }
