@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>Trackier Assignment Activation Email</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Nunito:ital,wght@0,200..1000;1,200..1000&display=swap"
+      rel="stylesheet"
+    />
+
+    <style type="text/css">
+      /* Base  */
+      body {
+        margin: 0;
+        padding: 0;
+        min-width: 100%;
+        font-family: "Nunito", sans-serif;
+        font-size: 15px;
+        font-weight: 500;
+        line-height: 1.5;
+        background-color: #fafafa;
+        color: #000000;
+      }
+      h1 {
+        font-size: 24px;
+        font-weight: 600;
+        line-height: 1.25;
+        margin-top: 0;
+        margin-bottom: 15px;
+        text-align: center;
+      }
+      p {
+        margin-top: 0;
+        margin-bottom: 2px;
+        text-align: center;
+      }
+      .header {
+        margin-top: 32px;
+      }
+      .activate {
+        width: 167px;
+        height: 133px;
+      }
+      .otp--wrapper {
+        width: 100%;
+        display: flex;
+        margin-top: 32px;
+        flex-direction: row;
+        align-items: center;
+        justify-content: center;
+      }
+      .otp {
+        width: 180px;
+        font-size: 24px;
+        font-weight: 500;
+        letter-spacing: 6px;
+        text-align: center;
+        background: #f2f2f2;
+        padding: 10px 36px;
+        border-radius: 4px;
+      }
+
+      /* Layout  */
+      .email-wrapper {
+        max-width: 600px;
+        margin: 0 auto;
+      }
+      .email-body {
+        padding: 24px;
+        background-color: #fff;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="email-wrapper">
+      <div class="email-body">
+        <h1 class="header">Confirm your Trackier Assignment account</h1>
+        <p>Thank you for registering with Trackier Assignment.</p>
+        <p>Please insert this OTP to confirm your account.</p>
+
+        <h3
+          class="otp--wrapper"
+          style="text-align: center; justify-content: center; line-height: 1;"
+        >
+          <span class="otp" style="justify-content:center;"><%= activationCode %></span>
+        </h3>
+      </div>
+      <div class="email-footer">
+        <span>Assignment by Ayush</span>
+      </div>
+    </div>
+  </body>
+</html>

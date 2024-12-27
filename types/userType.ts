@@ -14,3 +14,20 @@ export interface User {
     updatedAt: Date;
     Transactions?: Transaction[]; 
   }
+
+export interface IActivationToken {
+    token: string;
+    activationCode: string;
+}
+
+export interface IActivationRequest {
+    activation_token: string;
+    activation_code: string;
+}
+
+export interface IRegistrationBody {
+    email: string;
+    password: string;
+    fullName: string;
+    username: string;
+  }
