@@ -7,6 +7,7 @@ import { JwtPayload } from "jsonwebtoken";
 import authRouter from "./routes/auth.routes";
 import userRouter from "./routes/user.routes";
 import bookRouter from "./routes/book.routes";
+import transactionRouter from "./routes/transaction.routes";
 
 
 dotenv.config();
@@ -38,6 +39,7 @@ app.use(
 app.use("/api/v1", authRouter);
 app.use("/api/v1", userRouter);
 app.use("/api/v1", bookRouter);
+app.use("/api/v1", transactionRouter);
 
 // test api
 app.get("/api/v1/test", async (req: Request, res: Response, next: NextFunction) => {
