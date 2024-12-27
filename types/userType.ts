@@ -36,3 +36,9 @@ export interface ILoginRequest {
     email: string;
     password: string;
 }
+
+export interface IUpdateUserInfo {
+    fullName: string;
+    username?: string;
+    phoneNumber?: string;
+}

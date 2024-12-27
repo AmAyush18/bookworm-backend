@@ -10,6 +10,17 @@ export const checkEmailExistence = async (email: string) => {
   });
 };
 
+export const isUsernameAvailable = async (username: string) => {
+    const existingUser = await prisma.user.findFirst({
+      where: {
+        username,
+      },
+    });
+  
+    return !existingUser;
+  };
+  
+
 export const createUser = async (
     user: IRegistrationBody,
     activation_token: string
@@ -28,6 +39,18 @@ export const createUser = async (
         accessToken: activation_token,
         refreshToken: refresh_token,
       },
+    });
+  };
+
+  export const updateUser = async (
+    userId: number | undefined,
+    updatedUserData: any
+  ) => {
+    return await prisma.user.update({
+      where: {
+        id: userId,
+      },
+      data: updatedUserData,
     });
   };
 
