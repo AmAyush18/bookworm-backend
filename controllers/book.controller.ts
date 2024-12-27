@@ -2,7 +2,9 @@ import { Request, Response, NextFunction } from "express";
 import { CatchAsyncError } from "../middlewares/catchAsyncError";
 import { 
   checkISBNExistence, 
-  createBook 
+  createBook, 
+  getBookById, 
+  updateBook
 } from "../db/bookDBFunctions";
 import { handleErrors } from "../middlewares/errorHandler";
 
@@ -39,3 +41,30 @@ export const addBook = CatchAsyncError(
     }
   }
 );
+
+export const updateBookDetails = CatchAsyncError(
+    async (req: Request, res: Response, next: NextFunction) => {
+      try {
+        const { id } = req.params; 
+        const updateData = req.body;
+  
+        const existingBook = await getBookById(Number(id));
+        if (!existingBook) {
+          return res.status(404).json({
+            success: false,
+            message: "Book not found",
+          });
+        }
+  
+        const updatedBook = await updateBook(Number(id), updateData);
+  
+        res.status(200).json({
+          success: true,
+          message: "Book updated successfully",
+          data: updatedBook,
+        });
+      } catch (error) {
+        handleErrors(error as Error, req, res, next);
+      }
+    }
+  );
