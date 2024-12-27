@@ -2,8 +2,10 @@ import { Request, Response, NextFunction } from "express";
 import { CatchAsyncError } from "../middlewares/catchAsyncError";
 import { 
   checkISBNExistence, 
+  countBooks, 
   createBook, 
   deleteBook, 
+  getAllBooks, 
   getBookById, 
   updateBook
 } from "../db/bookDBFunctions";
@@ -93,4 +95,56 @@ export const deleteBookById = CatchAsyncError(
         handleErrors(error as Error, req, res, next);
       }
     }
+);
+
+export const getBook = CatchAsyncError(
+    async (req: Request, res: Response, next: NextFunction) => {
+      try {
+        const { id } = req.params;
+  
+        const book = await getBookById(Number(id));
+        if (!book) {
+          return res.status(404).json({
+            success: false,
+            message: "Book not found",
+          });
+        }
+  
+        res.status(200).json({
+          success: true,
+          data: book,
+        });
+      } catch (error) {
+        handleErrors(error as Error, req, res, next);
+      }
+    }
+);
+
+export const getBooks = CatchAsyncError(
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      // Get the query parameters
+      const page = parseInt(req.query.page as string) || 1; // Default to page 1
+      const limit = parseInt(req.query.limit as string) || 10; // Default to 10 books per page
+      const searchQuery = (req.query.search as string) || ""; // Default to no search query
+
+      // Fetch books with pagination and search
+      const books = await getAllBooks(page, limit, searchQuery);
+
+      const totalBooks = await countBooks(searchQuery)
+
+      res.status(200).json({
+        success: true,
+        data: books,
+        pagination: {
+          page,
+          limit,
+          totalBooks,
+          totalPages: Math.ceil(totalBooks / limit), // Calculate total pages
+        },
+      });
+    } catch (error) {
+      handleErrors(error as Error, req, res, next);
+    }
+  }
 );

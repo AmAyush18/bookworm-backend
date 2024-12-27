@@ -86,3 +86,56 @@ export const getBookById = async (bookId: number) => {
     },
   });
 };
+
+export const countBooks = async (searchQuery: string) => {
+    return await prisma.book.count({
+      where: {
+        // Search logic: If there's a search query, search by title or author
+        OR: [
+          {
+            title: {
+              contains: searchQuery,
+              mode: "insensitive", // Case-insensitive search
+            },
+          },
+          {
+            author: {
+              contains: searchQuery,
+              mode: "insensitive",
+            },
+          },
+        ],
+      },
+    });
+  };
+  
+
+export const getAllBooks = async (page: number, limit: number, searchQuery: string) => {
+    const offset = (page - 1) * limit;
+  
+    return await prisma.book.findMany({
+      where: {
+        // Search logic: If there's a search query, search by title or author
+        OR: [
+          {
+            title: {
+              contains: searchQuery,
+              mode: "insensitive", // Case-insensitive search
+            },
+          },
+          {
+            author: {
+              contains: searchQuery,
+              mode: "insensitive",
+            },
+          },
+        ],
+      },
+      skip: offset, // For pagination
+      take: limit,  // Limit the number of books per page
+      orderBy: {
+        createdAt: "desc", // Sorting by the creation date
+      },
+    });
+};
+  
