@@ -29,4 +29,3 @@ export const activationValidation = [
 export const loginValidation = [
     body("email").isEmail().withMessage("Invalid email format"),
 ];
-  

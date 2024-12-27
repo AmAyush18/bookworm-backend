@@ -6,6 +6,7 @@ import cookieParser from "cookie-parser";
 import { JwtPayload } from "jsonwebtoken";
 import authRouter from "./routes/auth.routes";
 import userRouter from "./routes/user.routes";
+import bookRouter from "./routes/book.routes";
 
 
 dotenv.config();
@@ -36,7 +37,7 @@ app.use(
 // routes
 app.use("/api/v1", authRouter);
 app.use("/api/v1", userRouter);
-
+app.use("/api/v1", bookRouter);
 
 // test api
 app.get("/api/v1/test", async (req: Request, res: Response, next: NextFunction) => {
