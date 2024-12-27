@@ -11,7 +11,6 @@ authRouter.post(
     "/auth/signup",
     registrationValidation,
     handleValidationErrors,
-    registrationValidation,
     registerUser
 )
 
