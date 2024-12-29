@@ -139,3 +139,35 @@ export const getAllBooks = async (page: number, limit: number, searchQuery: stri
     });
 };
   
+
+export const getBooksBorrowedByUser = async (userId: number) => {
+  const transactions = await prisma.transactions.findMany({
+    where: {
+      userId: userId,
+    },
+    include: {
+      Book: true,
+    },
+    orderBy: {
+      borrowedAt: "desc",
+    },
+  });
+
+  return transactions.map(transaction => ({
+    book: transaction.Book,
+    borrowedAt: transaction.borrowedAt,
+    returnedAt: transaction.returnedAt,
+    isCurrentlyBorrowed: !transaction.returnedAt,
+  }));
+};
+
+export const getMostFrequentlyBorrowedBooks = async () => {
+  const books = await prisma.book.findMany({
+    orderBy: {
+      borrowedCount: "desc",
+    },
+    take: 10,
+  });
+
+  return books;
+};
