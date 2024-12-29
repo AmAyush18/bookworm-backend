@@ -50,7 +50,7 @@ userRouter.put(
 
 /**
  * @swagger
- * /api/v1/user/update-password:
+ * /user/update-password:
  *   put:
  *     summary: Update User Password
  *     description: This API allows the user to update their password by verifying their current password.

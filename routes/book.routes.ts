@@ -1,5 +1,5 @@
 import express from "express";
-import { addBook, deleteBookById, getBook, getBooks, updateBookDetails } from "../controllers/book.controller";
+import { addBook, deleteBookById, getAllBooksBorrowedByUser, getBook, getBooks, getFrequentlyBorrowedBooks, updateBookDetails } from "../controllers/book.controller";
 import { handleValidationErrors } from "../middlewares/validation";
 import { addBookValidation, updateBookValidation } from "../validations/bookValidations";
 import { isAuthenticated } from "../middlewares/auth";
@@ -184,6 +184,75 @@ bookRouter.get(
 
 /**
  * @swagger
+ * /book/borrowed/{id}:
+ *   get:
+ *     summary: Get all books borrowed by a specific user
+ *     description: This endpoint retrieves all books borrowed by a specific user, including the transaction data (borrowedAt, returnedAt).
+ *     tags:
+ *       - Books
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         description: The ID of the user whose borrowed books you want to retrieve.
+ *         schema:
+ *           type: integer
+ *           example: 1
+ *     responses:
+ *       200:
+ *         description: A list of books borrowed by the user along with transaction data
+ *         content:
+ *           application/json:
+ *           schema:
+ *             type: array
+ *             items:
+ *               type: object
+ *               properties:
+ *                 book:
+ *                   type: object
+ *                   properties:
+ *                     id:
+ *                       type: integer
+ *                       example: 1
+ *                     title:
+ *                       type: string
+ *                       example: "The Great Gatsby"
+ *                     author:
+ *                       type: string
+ *                       example: "F. Scott Fitzgerald"
+ *                     genre:
+ *                       type: string
+ *                       example: "Classic"
+ *                     publishedYear:
+ *                       type: integer
+ *                       example: 1925
+ *                     isbn:
+ *                       type: string
+ *                       example: "9780743273565"
+ *                 borrowedAt:
+ *                   type: string
+ *                   format: date-time
+ *                   example: "2024-01-01T12:00:00Z"
+ *                 returnedAt:
+ *                   type: string
+ *                   format: date-time
+ *                   example: "2024-01-05T12:00:00Z"
+ *                 isCurrentlyBorrowed:
+ *                   type: boolean
+ *                   example: false
+ *       404:
+ *         description: User not found or no borrowed books
+ *       500:
+ *         description: Internal server error
+ */
+bookRouter.get(
+    "/book/borrowed/:id",
+    isAuthenticated,
+    getAllBooksBorrowedByUser
+);
+
+/**
+ * @swagger
  * /books:
  *   get:
  *     summary: Retrieve a list of books with pagination and search
@@ -273,6 +342,58 @@ bookRouter.get(
 bookRouter.get(
     "/books",
     getBooks
+);
+
+/**
+ * @swagger
+ * /books/frequently-borrowed:
+ *   get:
+ *     summary: Get most frequently borrowed books
+ *     description: This endpoint retrieves the most frequently borrowed books, including the count of times they have been borrowed.
+ *     tags:
+ *       - Books
+ *     responses:
+ *       200:
+ *         description: A list of most frequently borrowed books
+ *         content:
+ *           application/json:
+ *           schema:
+ *             type: array
+ *             items:
+ *               type: object
+ *               properties:
+ *                 book:
+ *                   type: object
+ *                   properties:
+ *                     id:
+ *                       type: integer
+ *                       example: 1
+ *                     title:
+ *                       type: string
+ *                       example: "The Great Gatsby"
+ *                     author:
+ *                       type: string
+ *                       example: "F. Scott Fitzgerald"
+ *                     genre:
+ *                       type: string
+ *                       example: "Classic"
+ *                     publishedYear:
+ *                       type: integer
+ *                       example: 1925
+ *                     isbn:
+ *                       type: string
+ *                       example: "9780743273565"
+ *                 borrowCount:
+ *                   type: integer
+ *                   example: 15
+ *       404:
+ *         description: No frequently borrowed books found
+ *       500:
+ *         description: Internal server error
+ */
+bookRouter.get(
+    "/books/frequently-borrowed",
+    getFrequentlyBorrowedBooks
 );
 
 export default bookRouter;

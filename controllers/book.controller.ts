@@ -7,6 +7,8 @@ import {
   deleteBook, 
   getAllBooks, 
   getBookById, 
+  getBooksBorrowedByUser, 
+  getMostFrequentlyBorrowedBooks, 
   updateBook
 } from "../db/bookDBFunctions";
 import { handleErrors } from "../middlewares/errorHandler";
@@ -142,6 +144,44 @@ export const getBooks = CatchAsyncError(
           totalBooks,
           totalPages: Math.ceil(totalBooks / limit), // Calculate total pages
         },
+      });
+    } catch (error) {
+      handleErrors(error as Error, req, res, next);
+    }
+  }
+);
+
+export const getAllBooksBorrowedByUser = CatchAsyncError(
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const { id } = req.params;
+      const borrowedBooks = await getBooksBorrowedByUser(Number(id));
+
+      if (!borrowedBooks || borrowedBooks.length === 0) {
+        return res.status(404).json({
+          success: false,
+          message: "No books borrowed by this user",
+        });
+      }
+
+      res.status(200).json({
+        success: true,
+        data: borrowedBooks,
+      });
+    } catch (error) {
+      handleErrors(error as Error, req, res, next);
+    }
+  }
+);
+
+export const getFrequentlyBorrowedBooks = CatchAsyncError(
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const books = await getMostFrequentlyBorrowedBooks();
+
+      res.status(200).json({
+        success: true,
+        data: books,
       });
     } catch (error) {
       handleErrors(error as Error, req, res, next);
