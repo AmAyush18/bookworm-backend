@@ -18,4 +18,19 @@ export const updateUserInfoValidation = [
   
         return true;
       }),
-  ];
+];
+
+export const updateUserPasswordValidation = [
+  body("currentPassword").notEmpty().withMessage("Current Password is required"),
+  body("newPassword")
+    .isLength({ min: 8 })
+    .withMessage("Password should be at least 8 characters long")
+    .matches(/[a-z]/)
+    .withMessage("Password should contain at least one lowercase letter")
+    .matches(/[A-Z]/)
+    .withMessage("Password should contain at least one uppercase letter")
+    .matches(/[0-9]/)
+    .withMessage("Password should contain at least one digit")
+    .matches(/[!@#$%^&*(),.?":{}|<>]/)
+    .withMessage("Password should contain at least one special character")
+]
