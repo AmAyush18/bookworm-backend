@@ -6,6 +6,7 @@ import { IUpdateUserInfo } from "../types";
 import { sendToken } from "../utils/jwt";
 import { handleErrors } from "../middlewares/errorHandler";
 import { getUser } from "../db/userDBFunctions";
+import bcrypt from 'bcryptjs';
 
 export const updateUserInfo = CatchAsyncError(
     async (req: Request, res: Response, next: NextFunction) => {
@@ -60,4 +61,52 @@ export const updateUserInfo = CatchAsyncError(
         handleErrors(error as Error, req, res, next);
       }
     }
-  );
+);
+
+export const updatePassword = CatchAsyncError(
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const { currentPassword, newPassword } = req.body;
+
+      const userId = req.user?.id;
+      
+      if (!userId) {
+        return res.status(401).json({
+          success: false,
+          message: "Unauthorized access, please log in again.",
+        });
+      }
+
+      const user = await getUser(userId);
+
+      if (!user) {
+        return res.status(404).json({
+          success: false,
+          message: "User not found",
+        });
+      }
+
+      const isCurrentPasswordValid = await bcrypt.compare(currentPassword, user.password);
+      
+      if (!isCurrentPasswordValid) {
+        return res.status(400).json({
+          success: false,
+          message: "Current password is incorrect",
+        });
+      }
+
+      const hashedNewPassword = await bcrypt.hash(newPassword, 10);
+
+      await updateUser(userId, {
+        password: hashedNewPassword,
+      });
+
+      res.status(200).json({
+        success: true,
+        message: "Password updated successfully",
+      });
+    } catch (error) {
+      handleErrors(error as Error, req, res, next);
+    }
+  }
+);

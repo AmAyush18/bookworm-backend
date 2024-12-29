@@ -1,11 +1,19 @@
 import { Request, Response, NextFunction } from "express";
 import { CatchAsyncError } from "../middlewares/catchAsyncError";
 import { handleErrors } from "../middlewares/errorHandler";
-import { borrowBook, checkBookAvailability, findBorrowedBook, returnBook, updateBookAvailability, updateBorrowedCount } from "../db/transactionDBFunctions";
+import { borrowBook, checkBookAvailability, updateBorrowedCount,returnBook, findBorrowedBook, updateBookAvailability } from "../db/transactionDBFunctions";
 
 export const borrowBookTransaction = CatchAsyncError(
   async (req: Request, res: Response, next: NextFunction) => {
-    const { userId, bookId } = req.body;
+    const { bookId } = req.body;
+    const loggedInUserId = req.user?.id;
+
+    if (!loggedInUserId) {
+      return res.status(401).json({
+        success: false,
+        message: "Invalid user, please log in again",
+      });
+    }
 
     try {
       // Check if the book exists and is available
@@ -24,8 +32,8 @@ export const borrowBookTransaction = CatchAsyncError(
         });
       }
 
-      // Create transaction and update the borrowed count
-      await borrowBook(userId, bookId);
+      // Proceed with borrowing the book, using the logged-in user's ID
+      await borrowBook(loggedInUserId, bookId);
       await updateBorrowedCount(bookId);
 
       res.status(200).json({
@@ -38,12 +46,22 @@ export const borrowBookTransaction = CatchAsyncError(
   }
 );
 
+
 export const returnBookTransaction = CatchAsyncError(
   async (req: Request, res: Response, next: NextFunction) => {
-    const { userId, bookId } = req.body;
+    const { bookId } = req.body;
+    const loggedInUserId = req.user?.id;  // Get userId from the logged-in user (set by the isAuthenticated middleware)
+
+    if (!loggedInUserId) {
+      return res.status(401).json({
+        success: false,
+        message: "Invalid user, please log in again",
+      });
+    }
 
     try {
-      const transaction = await findBorrowedBook(userId, bookId);
+      // Find the book transaction for the logged-in user
+      const transaction = await findBorrowedBook(loggedInUserId, bookId);
       if (!transaction) {
         return res.status(404).json({
           success: false,
@@ -51,9 +69,9 @@ export const returnBookTransaction = CatchAsyncError(
         });
       }
 
-      // Update the transaction with the returned date
+      // Proceed with returning the book
       await returnBook(transaction.id);
-      updateBookAvailability(bookId)      
+      await updateBookAvailability(bookId);
 
       res.status(200).json({
         success: true,

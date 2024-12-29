@@ -2,7 +2,7 @@ require("dotenv").config();
 import { Request, Response, NextFunction } from "express";
 import { CatchAsyncError } from "../middlewares/catchAsyncError";
 import bcrypt, { compare } from "bcryptjs";
-import { checkEmailExistence, checkUserExistence, createUser } from "../db/authDBFunctions";
+import { checkEmailExistence, checkUserExistence, createUser, isUsernameAvailable } from "../db/authDBFunctions";
 import { IRegistrationBody, IActivationToken, IActivationRequest, ILoginRequest } from "../types";
 import jwt from "jsonwebtoken";
 import { createActivationToken, sendToken } from "../utils/jwt";
@@ -18,6 +18,18 @@ export const registerUser = CatchAsyncError(
           return res.status(400).json({
             success: false,
             message: `Email Already existed!`,
+          });
+        }
+
+        const isUsernameUnique = await isUsernameAvailable(
+          username?.trim().toLocaleLowerCase()
+        );
+
+        if (!isUsernameUnique) {
+          return res.status(400).json({
+            success: false,
+            message:
+              "Username is already taken. Please choose a different one.",
           });
         }
   
@@ -110,7 +122,7 @@ export const registerUser = CatchAsyncError(
         if (!passwordMatch) {
           return res.status(400).json({
             success: false,
-            message: "Username or password is invalid!",
+            message: "Email or password is invalid!",
           });
         }
   
@@ -120,6 +132,22 @@ export const registerUser = CatchAsyncError(
       }
     }
   );
+
+export const logoutUser = CatchAsyncError(
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      res.clearCookie("access_token");
+      res.clearCookie("refresh_token");
+
+      res.status(200).json({
+        success: true,
+        message: "Logged Out successfully",
+      });
+    } catch (error) {
+      handleErrors(error as Error, req, res, next);
+    }
+  }
+);
 
   export const sendActivationMail = async (
     email: string,
