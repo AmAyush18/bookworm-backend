@@ -27,7 +27,7 @@ This is a backend API for managing users, books, and transactions. It allows use
 
 - **Transaction Management**:
   - Borrow books
-  - Return books (implied, can be implemented similarly to borrowing)
+  - Return books
 
 ## Technologies Used
 
