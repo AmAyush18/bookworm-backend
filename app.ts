@@ -28,21 +28,20 @@ declare global {
 const swaggerDefinition = {
   openapi: '3.0.0',
   info: {
-    title: 'Book API',
+    title: 'Trackier Assignment Backend',
     version: '1.0.0',
-    description: 'API documentation for the Book Management System',
+    description: 'API documentation for the Inhouse Book Management System',
   },
   servers: [
     {
-      url: 'http://localhost:3000/api/v1', // Change to your API server URL
+      url: 'https://trackier-assignment-backend-4z3j.onrender.com/api/v1',
     },
   ],
 };
 
-// Options for Swagger JSDoc
 const options = {
   swaggerDefinition,
-  apis: ['./routes/*.ts'], // Path to your route files for automatic documentation generation
+  apis: ['./routes/*.ts'],
 };
 
 const swaggerSpec = swaggerJsdoc(options);
