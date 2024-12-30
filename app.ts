@@ -71,7 +71,7 @@ app.use("/api/v1", bookRouter);
 app.use("/api/v1", transactionRouter);
 
 // test api
-app.get("/api/v1/test", async (req: Request, res: Response, next: NextFunction) => {
+app.get("/", async (req: Request, res: Response, next: NextFunction) => {
   try {
     res.status(200).json({
       success: true,
