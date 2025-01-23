@@ -34,7 +34,7 @@ const swaggerDefinition = {
   },
   servers: [
     {
-      url: 'https://trackier-assignment-backend-4z3j.onrender.com/api/v1',
+      url: 'https://bookworm-backend-4804.onrender.com/api/v1',
     },
   ],
 };
